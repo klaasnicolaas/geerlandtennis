@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "timezone": "Europe/Amsterdam",
+  "schedule": ["before 6am every weekday"],
+  "rebaseWhen": "behind-base-branch",
+  "dependencyDashboard": true,
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "⬆️",
+  "packageRules": [
+    {
+      "matchManagers": ["composer"],
+      "addLabels": ["php"]
+    },
+    {
+      "matchManagers": ["npm"],
+      "addLabels": ["javascript"]
+    },
+    {
+      "matchManagers": ["npm", "composer"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "addLabels": ["github_actions"],
+      "rangeStrategy": "pin"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchManagers": ["docker-compose"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": false
+    }
+  ]
+}
