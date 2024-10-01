@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Separate fields for singles and doubles
+            $table->float('rating_singles', precision: 4)->default(9); // Rating for singles
+            $table->float('rating_doubles', precision: 4)->default(9); // Rating for doubles
+
             $table->string('avatar_url')->nullable();
             $table->rememberToken();
             $table->timestamps();

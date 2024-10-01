@@ -54,6 +54,16 @@ class UserResource extends Resource
                         ->dehydrated(fn ($state) => filled($state))
                         ->required(fn ($livewire) => ($livewire instanceof CreateUser))
                         ->maxLength(255),
+                    TextInput::make('rating_singles')
+                        ->numeric()
+                        ->step('0.0001')
+                        ->required()
+                        ->default('9.0000'),
+                    TextInput::make('rating_doubles')
+                        ->numeric()
+                        ->step('0.0001')
+                        ->required()
+                        ->default('9.0000'),
                     Select::make('roles')
                         ->label('Roles')
                         ->preload()
@@ -78,9 +88,22 @@ class UserResource extends Resource
                         return $record->avatar_url ?? $avatarUrlIsNull;
                     }),
                 TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('email')
                     ->searchable(),
+                TextColumn::make('rating_singles')
+                    ->label('Single')
+                    ->formatStateUsing(function ($state) {
+                        return number_format($state, 3).' ('.intval($state).')';
+                    })
+                    ->sortable(),
+                TextColumn::make('rating_doubles')
+                    ->label('Double')
+                    ->formatStateUsing(function ($state) {
+                        return number_format($state, 3).' ('.intval($state).')';
+                    })
+                    ->sortable(),
                 TextColumn::make('roles.name')
                     ->sortable()
                     ->badge()
