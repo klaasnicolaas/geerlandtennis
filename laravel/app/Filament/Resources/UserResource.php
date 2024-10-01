@@ -95,13 +95,13 @@ class UserResource extends Resource
                 TextColumn::make('rating_singles')
                     ->label('Single')
                     ->formatStateUsing(function ($state) {
-                        return number_format($state, 3) . ' (' . intval($state) . ')';
+                        return number_format($state, 3).' ('.intval($state).')';
                     })
                     ->sortable(),
                 TextColumn::make('rating_doubles')
                     ->label('Double')
                     ->formatStateUsing(function ($state) {
-                        return number_format($state, 3) . ' (' . intval($state) . ')';
+                        return number_format($state, 3).' ('.intval($state).')';
                     })
                     ->sortable(),
                 TextColumn::make('roles.name')
