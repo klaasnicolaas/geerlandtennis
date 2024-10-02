@@ -5,15 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\User;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
 
@@ -39,32 +34,32 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make()->schema([
-                    TextInput::make('name')
+                Forms\Components\Section::make()->schema([
+                    Forms\Components\TextInput::make('name')
                         ->required()
                         ->maxLength(255),
-                    TextInput::make('email')
+                    Forms\Components\TextInput::make('email')
                         ->email()
                         ->required()
                         ->maxLength(255),
-                    DateTimePicker::make('email_verified_at'),
-                    TextInput::make('password')
+                    Forms\Components\DateTimePicker::make('email_verified_at'),
+                    Forms\Components\TextInput::make('password')
                         ->password()
                         ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                         ->dehydrated(fn ($state) => filled($state))
                         ->required(fn ($livewire) => ($livewire instanceof CreateUser))
                         ->maxLength(255),
-                    TextInput::make('rating_singles')
+                    Forms\Components\TextInput::make('rating_singles')
                         ->numeric()
                         ->step('0.0001')
                         ->required()
                         ->default('9.0000'),
-                    TextInput::make('rating_doubles')
+                    Forms\Components\TextInput::make('rating_doubles')
                         ->numeric()
                         ->step('0.0001')
                         ->required()
                         ->default('9.0000'),
-                    Select::make('roles')
+                    Forms\Components\Select::make('roles')
                         ->label('Roles')
                         ->preload()
                         ->multiple()
@@ -78,7 +73,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('avatar_url')
+                Tables\Columns\ImageColumn::make('avatar_url')
                     ->circular()
                     ->label('Avatar')
                     ->defaultImageUrl(function ($record) {
@@ -87,35 +82,35 @@ class UserResource extends Resource
 
                         return $record->avatar_url ?? $avatarUrlIsNull;
                     }),
-                TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('email')
+                Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                TextColumn::make('rating_singles')
+                Tables\Columns\TextColumn::make('rating_singles')
                     ->label('Single')
                     ->formatStateUsing(function ($state) {
                         return number_format($state, 3).' ('.intval($state).')';
                     })
                     ->sortable(),
-                TextColumn::make('rating_doubles')
+                Tables\Columns\TextColumn::make('rating_doubles')
                     ->label('Double')
                     ->formatStateUsing(function ($state) {
                         return number_format($state, 3).' ('.intval($state).')';
                     })
                     ->sortable(),
-                TextColumn::make('roles.name')
+                Tables\Columns\TextColumn::make('roles.name')
                     ->sortable()
                     ->badge()
                     ->separator(', '),
-                TextColumn::make('email_verified_at')
+                Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
