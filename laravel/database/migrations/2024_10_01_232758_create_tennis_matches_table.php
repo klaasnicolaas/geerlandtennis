@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\MatchCategory;
+use App\Enums\MatchType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('tennis_matches', function (Blueprint $table) {
             $table->id();
-            $table->enum('match_type', ['single', 'double']);
-            $table->enum('match_category', ['practice', 'tournament']);
+            $table->enum('match_type', MatchType::toArray());
+            $table->enum('match_category', MatchCategory::toArray());
             $table->foreignId('team_one_player_one_id')->constrained('users');
             $table->foreignId('team_one_player_two_id')->nullable()->constrained('users');
             $table->foreignId('team_two_player_one_id')->constrained('users');

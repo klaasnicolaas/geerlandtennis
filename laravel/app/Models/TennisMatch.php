@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\MatchCategory;
+use App\Enums\MatchType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TennisMatch extends Model
 {
@@ -19,6 +21,11 @@ class TennisMatch extends Model
         'team_two_player_one_id',
         'team_two_player_two_id',
         'match_date',
+    ];
+
+    protected $casts = [
+        'match_type' => MatchType::class,
+        'match_category' => MatchCategory::class,
     ];
 
     public function sets(): HasMany
