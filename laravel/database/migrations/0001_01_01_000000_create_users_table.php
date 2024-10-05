@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -19,21 +19,21 @@ return new class extends Migration
             $table->string('password');
 
             // Separate fields for singles and doubles
-            $table->float('rating_singles', precision: 4)->default(9); // Rating for singles
-            $table->float('rating_doubles', precision: 4)->default(9); // Rating for doubles
+            $table->decimal('rating_singles', 5, 4)->default(9);
+            $table->decimal('rating_doubles', 5, 4)->default(9);
 
             $table->string('avatar_url')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
+        Schema::create('password_reset_tokens', function (Blueprint $table): void {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
-        Schema::create('sessions', function (Blueprint $table) {
+        Schema::create('sessions', function (Blueprint $table): void {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
