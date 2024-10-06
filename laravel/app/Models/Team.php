@@ -26,6 +26,6 @@ class Team extends Model
     // Tournaments that the team participates in.
     public function tournaments(): BelongsToMany
     {
-        return $this->belongsToMany(Tournament::class, 'team_tournament');
+        return $this->belongsToMany(Tournament::class, 'team_tournament')->withTimestamps();
     }
 }
