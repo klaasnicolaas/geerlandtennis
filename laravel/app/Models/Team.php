@@ -17,8 +17,15 @@ class Team extends Model
     /**
      * Relationships to other models.
      */
+    // Users that are part of the team.
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    // Tournaments that the team participates in.
+    public function tournaments(): BelongsToMany
+    {
+        return $this->belongsToMany(Tournament::class, 'team_tournament');
     }
 }
