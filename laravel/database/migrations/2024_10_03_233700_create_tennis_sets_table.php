@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sets', function (Blueprint $table) {
+        Schema::create('tennis_sets', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('tennis_match_id')->constrained('tennis_matches')->onDelete('cascade');
             $table->integer('set_number');
             $table->integer('team_one_score');
             $table->integer('team_two_score');
-            $table->boolean('tie_break')->default(false);
-            $table->enum('winning_team', ['team_one', 'team_two']);
+            $table->boolean('has_tie_break')->default(false);
+            $table->integer('team_one_tie_break_score')->nullable();
+            $table->integer('team_two_tie_break_score')->nullable();
             $table->timestamps();
         });
     }

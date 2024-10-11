@@ -53,7 +53,7 @@ class TeamResource extends Resource
                     ->label('Team name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('users')
+                Tables\Columns\TextColumn::make('users.name')
                     ->label('Tennis players')
                     ->formatStateUsing(function ($record): mixed {
                         return $record->users->pluck('name')->join(', ');

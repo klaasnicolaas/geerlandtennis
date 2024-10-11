@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Set extends Model
+class TennisSet extends Model
 {
     use HasFactory;
 
@@ -15,10 +15,14 @@ class Set extends Model
         'set_number',
         'team_one_score',
         'team_two_score',
-        'tie_break',
-        'winning_team',
+        'has_tie_break',
+        'team_one_tie_break_score',
+        'team_two_tie_break_score',
     ];
 
+    /**
+     * Relationships to other models.
+     */
     public function tennisMatch(): BelongsTo
     {
         return $this->belongsTo(TennisMatch::class);

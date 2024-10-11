@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\MatchCategory;
 use App\Enums\MatchType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,42 +13,47 @@ class TennisMatch extends Model
     use HasFactory;
 
     protected $fillable = [
-        'match_type',
-        'match_category',
-        'team_one_player_one_id',
-        'team_one_player_two_id',
-        'team_two_player_one_id',
-        'team_two_player_two_id',
+        'team_one_id',
+        'team_two_id',
+        'winner_team_id',
+        'tournament_id',
         'match_date',
+        'match_type',
+        'is_practice',
     ];
 
     protected $casts = [
         'match_type' => MatchType::class,
-        'match_category' => MatchCategory::class,
     ];
 
+    /**
+     * Relationships to other models.
+     */
+    // Teams that participate in the match.
+    public function teamOne(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'team_one_id');
+    }
+
+    public function teamTwo(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'team_two_id');
+    }
+
+    public function winnerTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'winner_team_id');
+    }
+
+    // Many sets that make up the match.
     public function sets(): HasMany
     {
-        return $this->hasMany(Set::class, 'tennis_match_id');
+        return $this->hasMany(TennisSet::class);
     }
 
-    public function teamOnePlayerOne(): BelongsTo
+    // The tournament the match is part of.
+    public function tournament(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'team_one_player_one_id');
-    }
-
-    public function teamOnePlayerTwo(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'team_one_player_two_id');
-    }
-
-    public function teamTwoPlayerOne(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'team_two_player_one_id');
-    }
-
-    public function teamTwoPlayerTwo(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'team_two_player_two_id');
+        return $this->belongsTo(Tournament::class);
     }
 }

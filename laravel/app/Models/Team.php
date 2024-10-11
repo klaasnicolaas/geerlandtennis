@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Team extends Model
 {
@@ -27,5 +28,11 @@ class Team extends Model
     public function tournaments(): BelongsToMany
     {
         return $this->belongsToMany(Tournament::class, 'team_tournament')->withTimestamps();
+    }
+
+    // Matches that the team participates in.
+    public function tennisMatches(): HasMany
+    {
+        return $this->hasMany(TennisMatch::class);
     }
 }
