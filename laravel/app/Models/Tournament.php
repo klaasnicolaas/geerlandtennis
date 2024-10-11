@@ -6,6 +6,7 @@ use App\Enums\MatchType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tournament extends Model
 {
@@ -30,5 +31,11 @@ class Tournament extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_tournament')->withTimestamps();
+    }
+
+    // Matches that are part of the tournament.
+    public function tennisMatches(): HasMany
+    {
+        return $this->hasMany(TennisMatch::class);
     }
 }
