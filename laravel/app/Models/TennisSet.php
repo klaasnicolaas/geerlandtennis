@@ -16,8 +16,6 @@ class TennisSet extends Model
         'team_one_score',
         'team_two_score',
         'has_tie_break',
-        'team_one_tie_break_score',
-        'team_two_tie_break_score',
     ];
 
     /**

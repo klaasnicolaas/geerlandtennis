@@ -26,8 +26,14 @@ return new class extends Migration
         // Create the pivot table for the relationship between teams and tournaments.
         Schema::create('team_tournament', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tournament_id')->constrained()->onDelete('cascade');
+            $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
+            $table->foreignId('tournament_id')->constrained('tournaments')->onDelete('cascade');
+
+            // Optional fields for additional data
+            $table->timestamp('registration_date')->nullable();
+            $table->integer('seed_number')->nullable();
+            $table->enum('status', ['registered', 'eliminated', 'active'])->default('registered');
+
             $table->timestamps();
         });
     }

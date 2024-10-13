@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tennis_match_id')->constrained('tennis_matches')->onDelete('cascade');
             $table->integer('set_number');
+
+            // Scores for each team in this set
             $table->integer('team_one_score');
             $table->integer('team_two_score');
+
+            // Boolean to determine if a tie-break occurred in the set
             $table->boolean('has_tie_break')->default(false);
-            $table->integer('team_one_tie_break_score')->nullable();
-            $table->integer('team_two_tie_break_score')->nullable();
             $table->timestamps();
         });
     }

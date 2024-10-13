@@ -30,7 +30,9 @@ class Tournament extends Model
     // Teams that participate in the tournament.
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class, 'team_tournament')->withTimestamps();
+        return $this->belongsToMany(Team::class, 'team_tournament')
+            ->withPivot('registration_date', 'seed_number', 'status')
+            ->withTimestamps();
     }
 
     // Matches that are part of the tournament.

@@ -11,7 +11,6 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -95,11 +94,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     // Teams that the user is part of.
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class)->withTimestamps();
-    }
-
-    public function tennisMatches(): HasMany
-    {
-        return $this->hasMany(TennisMatch::class);
+        return $this->belongsToMany(Team::class);
     }
 }
