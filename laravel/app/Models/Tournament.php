@@ -31,8 +31,8 @@ class Tournament extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_tournament')
-                    ->withPivot('registration_date', 'seed_number', 'status')
-                    ->withTimestamps();
+            ->withPivot('registration_date', 'seed_number', 'status')
+            ->withTimestamps();
     }
 
     // Matches that are part of the tournament.
