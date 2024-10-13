@@ -14,10 +14,18 @@ return new class extends Migration
     {
         Schema::create('tennis_matches', function (Blueprint $table): void {
             $table->id();
+
+            // Optional tournament relationship, set to null if tournament is deleted
+            $table->foreignId('tournament_id')->nullable()->constrained('tournaments')->onDelete('set null');
+
+            // Teams participating in the match
             $table->foreignId('team_one_id')->constrained('teams')->onDelete('cascade');
             $table->foreignId('team_two_id')->constrained('teams')->onDelete('cascade');
+
+            // Winner team, set to null if team is deleted
             $table->foreignId('winner_team_id')->nullable()->constrained('teams')->onDelete('set null');
-            $table->foreignId('tournament_id')->nullable()->constrained('tournaments')->onDelete('set null');
+
+            // Match-specific data
             $table->date('match_date');
             $table->enum('match_type', MatchType::toArray());
             $table->boolean('is_practice')->default(false);
