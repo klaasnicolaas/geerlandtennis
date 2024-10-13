@@ -54,6 +54,6 @@ class TennisMatch extends Model
     // The tournament the match is part of.
     public function tournament(): BelongsTo
     {
-        return $this->belongsTo(Tournament::class);
+        return $this->belongsTo(Tournament::class)->nullable();
     }
 }

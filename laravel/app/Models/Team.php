@@ -21,17 +21,19 @@ class Team extends Model
     // Users that are part of the team.
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class, 'team_user');
     }
 
     // Tournaments that the team participates in.
     public function tournaments(): BelongsToMany
     {
-        return $this->belongsToMany(Tournament::class, 'team_tournament')->withTimestamps();
+        return $this->belongsToMany(Tournament::class, 'team_tournament')
+                    ->withPivot('registration_date', 'seed_number', 'status')
+                    ->withTimestamps();
     }
 
     // Matches that the team participates in.
-    public function tennisMatches(): HasMany
+    public function matches(): HasMany
     {
         return $this->hasMany(TennisMatch::class);
     }

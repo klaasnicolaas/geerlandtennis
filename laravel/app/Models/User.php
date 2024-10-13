@@ -95,11 +95,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     // Teams that the user is part of.
     public function teams(): BelongsToMany
     {
-        return $this->belongsToMany(Team::class)->withTimestamps();
-    }
-
-    public function tennisMatches(): HasMany
-    {
-        return $this->hasMany(TennisMatch::class);
+        return $this->belongsToMany(Team::class);
     }
 }
