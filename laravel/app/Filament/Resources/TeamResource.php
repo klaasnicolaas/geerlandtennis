@@ -33,15 +33,18 @@ class TeamResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Team name')
                     ->required()
-                    ->unique(ignorable: fn ($record): mixed => $record),
+                    ->label('Team name')
+                    ->unique(Team::class, 'name', ignoreRecord: true)
+                    ->helperText('The team name must be unique.'),
                 Forms\Components\Select::make('users')
-                    ->label('Tennis Players')
-                    ->multiple()
-                    ->maxItems(2)
                     ->relationship('users', 'name')
-                    ->required(),
+                    ->multiple()
+                    ->label('Tennis Players')
+                    ->required()
+                    ->minItems(1)
+                    ->maxItems(2)
+                    ->helperText('A team can have a minimum of 1 and a maximum of 2 players.'),
             ]);
     }
 
@@ -55,9 +58,7 @@ class TeamResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('users.name')
                     ->label('Tennis players')
-                    ->formatStateUsing(function ($record): mixed {
-                        return $record->users->pluck('name')->join(', ');
-                    }),
+                    ->formatStateUsing(fn ($record): string => $record->users->pluck('name')->join(', ')),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
