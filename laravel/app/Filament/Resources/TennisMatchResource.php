@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\MatchType;
 use App\Filament\Resources\TennisMatchResource\Pages;
+use App\Filament\Resources\TennisMatchResource\RelationManagers;
 use App\Models\TennisMatch;
 use App\Rules\SinglePlayerTeam;
 use App\Rules\PlayerNotInBothTeams;
@@ -163,7 +164,7 @@ class TennisMatchResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\SetsRelationManager::class,
         ];
     }
 
