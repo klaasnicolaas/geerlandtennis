@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\MatchCategory;
 use App\Enums\MatchType;
 use App\Filament\Resources\TennisMatchResource\Pages;
 use App\Models\TennisMatch;
+use App\Rules\SinglePlayerTeam;
+use App\Rules\PlayerNotInBothTeams;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,7 +17,7 @@ class TennisMatchResource extends Resource
 {
     protected static ?string $model = TennisMatch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-play';
 
     protected static ?string $navigationLabel = 'Matches';
 
@@ -34,80 +35,86 @@ class TennisMatchResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('General')->schema([
-                    Forms\Components\Radio::make('match_type')
-                        ->options(MatchType::class)
-                        ->live()
-                        ->inline()
-                        ->inlineLabel(false)
-                        ->required()
-                        ->reactive(),
-                    Forms\Components\Select::make('match_category')
-                        ->options(MatchCategory::class)
-                        ->native(false)
-                        ->required(),
-                    Forms\Components\DatePicker::make('match_date')
-                        ->required(),
-                ])->columns(3),
-                Forms\Components\Section::make('Team One')
-                    ->description('Select players for the first team.')
+                Forms\Components\Section::make('Match Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('team_one_player_one_id')
-                            ->relationship('teamOnePlayerOne', 'name')
-                            ->label('Team One - Player 1')
-                            ->native(false)
-                            ->searchable()
+                        Forms\Components\Select::make('match_type')
+                            ->options(MatchType::class)
                             ->required()
-
-                            // Validation rule
-                            ->rules(['different:team_two_player_one_id,team_two_player_two_id,team_one_player_two_id'])
-                            ->validationMessages([
-                                'different' => 'The player must be different from the other players.',
-                            ]),
-                        Forms\Components\Select::make('team_one_player_two_id')
-                            ->relationship('teamOnePlayerTwo', 'name')
-                            ->label('Team One - Player 2')
-                            ->visible(fn (Forms\Get $get): bool => $get('match_type') === MatchType::DOUBLE->value)
-                            ->searchable()
                             ->native(false)
-                            ->requiredIf('match_type', MatchType::DOUBLE->value)
-
-                            // Validation rule
-                            ->rules(['different:team_one_player_one_id,team_two_player_one_id,team_two_player_two_id'])
-                            ->validationMessages([
-                                'different' => 'The player must be different from the other players.',
-                            ]),
+                            ->label('Match Type')
+                            ->helperText('Select whether this is a singles or doubles match.'),
+                        Forms\Components\DatePicker::make('match_date')
+                            ->required()
+                            ->label('Match Date')
+                            ->helperText('Choose the date of the match.')
+                            ->rules(['date', 'after_or_equal:today']),
+                        Forms\Components\Toggle::make('is_practice')
+                            ->label('Is Practice')
+                            ->default(false),
                     ]),
-                Forms\Components\Section::make('Team Two')
-                    ->description('Select players for the second team.')
+                Forms\Components\Section::make('Team and Tournament')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('team_two_player_one_id')
-                            ->relationship('teamTwoPlayerOne', 'name')
-                            ->label('Team Two - Player 1')
-                            ->native(false)
-                            ->searchable()
+                        Forms\Components\Select::make('team_one_id')
+                            ->relationship('teamOne', 'name')
                             ->required()
-
-                            // Validation rule
-                            ->rules(['different:team_one_player_one_id,team_one_player_two_id,team_two_player_two_id'])
-                            ->validationMessages([
-                                'different' => 'The player must be different from the other players.',
-                            ]),
-                        Forms\Components\Select::make('team_two_player_two_id')
-                            ->relationship('teamTwoPlayerTwo', 'name')
-                            ->label('Team Two - Player 2')
-                            ->visible(fn (Forms\Get $get): bool => $get('match_type') === MatchType::DOUBLE->value)
-                            ->searchable()
                             ->native(false)
-                            ->requiredIf('match_type', MatchType::DOUBLE->value)
+                            ->label('Team One')
+                            ->rules([
+                                'required',
+                                'different:team_two_id',
+                                function (Forms\Get $get): SinglePlayerTeam|null {
+                                    return $get('match_type') === MatchType::SINGLE->value
+                                        ? new SinglePlayerTeam() : null;
+                                }
+                            ])
+                            ->helperText('Select the first team.'),
+                        Forms\Components\Select::make('team_two_id')
+                            ->relationship('teamTwo', 'name')
+                            ->required()
+                            ->native(false)
+                            ->label('Team Two')
+                            ->rules([
+                                'required',
+                                'different:team_one_id',
+                                function (Forms\Get $get): SinglePlayerTeam|null {
+                                    // Apply the SinglePlayerTeam rule if match_type is 'single'
+                                    return $get('match_type') === MatchType::SINGLE->value
+                                        ? new SinglePlayerTeam() : null;
+                                },
+                                function (Forms\Get $get): PlayerNotInBothTeams {
+                                    // Apply the PlayerNotInBothTeams rule to ensure no player is in both teams
+                                    return new PlayerNotInBothTeams($get('team_one_id'), $get('team_two_id'));
+                                },
+                            ])
+                            ->helperText('Select the second team.'),
+                        Forms\Components\Select::make('tournament_id')
+                            ->relationship('tournament', 'name')
+                            ->nullable()
+                            ->native(false)
+                            ->label('Tournament'),
+                        Forms\Components\Select::make('winner_team_id')
+                            ->label('Winner Team')
+                            ->nullable()
+                            ->helperText('Select the winning team after the match is complete.')
+                            ->native(false)
+                            ->options(function (Forms\Get $get): array {
+                                // Generate array of options based on the selected teams
+                                $teamOne = $get('team_one_id');
+                                $teamTwo = $get('team_two_id');
 
-                            // Validation rule
-                            ->rules(['different:team_one_player_one_id,team_one_player_two_id,team_two_player_one_id'])
-                            ->validationMessages([
-                                'different' => 'The player must be different from the other players.',
-                            ]),
+                                $options = [];
+                                if ($teamOne) {
+                                    $options[$teamOne] = \App\Models\Team::find($teamOne)->name;
+                                }
+                                if ($teamTwo) {
+                                    $options[$teamTwo] = \App\Models\Team::find($teamTwo)->name;
+                                }
+                                return $options;
+                            })
+                            ->visible(fn($livewire) => $livewire instanceof Pages\EditTennisMatch)
+                            ->rules(['nullable', 'exists:teams,id']),
                     ]),
             ]);
     }
@@ -118,25 +125,18 @@ class TennisMatchResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('match_type')
                     ->label('Type'),
-                Tables\Columns\TextColumn::make('match_category')
-                    ->label('Category'),
-                Tables\Columns\TextColumn::make('team_one_player_one_id')
-                    ->label('Team - One')
-                    ->formatStateUsing(function ($record): mixed {
-                        return $record->match_type === MatchType::DOUBLE
-                            ? "{$record->teamOnePlayerOne->name} & {$record->teamOnePlayerTwo->name}"
-                            : $record->teamOnePlayerOne->name;
-                    }),
-                Tables\Columns\TextColumn::make('team_two_player_one_id')
-                    ->label('Team - Two')
-                    ->formatStateUsing(function ($record): mixed {
-                        return $record->match_type === MatchType::DOUBLE
-                            ? "{$record->teamTwoPlayerOne->name} & {$record->teamTwoPlayerTwo->name}"
-                            : $record->teamTwoPlayerOne->name;
-                    }),
+                Tables\Columns\TextColumn::make('teamOne.name'),
+                Tables\Columns\TextColumn::make('teamTwo.name'),
+                Tables\Columns\TextColumn::make('winnerTeam.name')
+                    ->label('🏆 Winner'),
                 Tables\Columns\TextColumn::make('match_date')
                     ->label('Date')
                     ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tournament.name'),
+                Tables\Columns\IconColumn::make('is_practice')
+                    ->label('Practice Match')
+                    ->boolean()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
