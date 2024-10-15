@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TennisMatchResource\RelationManagers\SetsRelationManager;
-use App\Rules\UniqueSetNumber;
 use App\Filament\Resources\TennisSetResource\Pages;
 use App\Models\TennisSet;
+use App\Rules\UniqueSetNumber;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -51,7 +50,7 @@ class TennisSetResource extends Resource
                         'required',
                         'integer',
                         'min:1',
-                        fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id'))
+                        fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id')),
                     ]),
                 // Scores Section
                 Forms\Components\Fieldset::make('Scores')

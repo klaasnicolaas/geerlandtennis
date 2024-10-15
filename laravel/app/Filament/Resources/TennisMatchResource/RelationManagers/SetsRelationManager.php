@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 class SetsRelationManager extends RelationManager
 {
     protected static string $relationship = 'sets';
+
     protected static ?string $recordTitleAttribute = 'set_number';
 
     public function form(Form $form): Form

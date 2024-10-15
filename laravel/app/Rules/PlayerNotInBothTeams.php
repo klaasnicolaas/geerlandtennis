@@ -9,6 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class PlayerNotInBothTeams implements ValidationRule
 {
     protected $teamOneId;
+
     protected $teamTwoId;
 
     /**
@@ -44,7 +45,7 @@ class PlayerNotInBothTeams implements ValidationRule
             // Find the common player IDs in both teams
             $commonPlayerIds = array_intersect($teamOnePlayers, $teamTwoPlayers);
 
-            if (!empty($commonPlayerIds)) {
+            if (! empty($commonPlayerIds)) {
                 // Find the names of the common players
                 $commonPlayerNames = \App\Models\User::whereIn('id', $commonPlayerIds)
                     ->pluck('name')

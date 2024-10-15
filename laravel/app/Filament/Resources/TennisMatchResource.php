@@ -6,8 +6,8 @@ use App\Enums\MatchType;
 use App\Filament\Resources\TennisMatchResource\Pages;
 use App\Filament\Resources\TennisMatchResource\RelationManagers;
 use App\Models\TennisMatch;
-use App\Rules\SinglePlayerTeam;
 use App\Rules\PlayerNotInBothTeams;
+use App\Rules\SinglePlayerTeam;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -65,10 +65,10 @@ class TennisMatchResource extends Resource
                             ->rules([
                                 'required',
                                 'different:team_two_id',
-                                function (Forms\Get $get): SinglePlayerTeam|null {
+                                function (Forms\Get $get): ?SinglePlayerTeam {
                                     return $get('match_type') === MatchType::SINGLE->value
-                                        ? new SinglePlayerTeam() : null;
-                                }
+                                        ? new SinglePlayerTeam : null;
+                                },
                             ])
                             ->helperText('Select the first team.'),
                         Forms\Components\Select::make('team_two_id')
@@ -79,10 +79,10 @@ class TennisMatchResource extends Resource
                             ->rules([
                                 'required',
                                 'different:team_one_id',
-                                function (Forms\Get $get): SinglePlayerTeam|null {
+                                function (Forms\Get $get): ?SinglePlayerTeam {
                                     // Apply the SinglePlayerTeam rule if match_type is 'single'
                                     return $get('match_type') === MatchType::SINGLE->value
-                                        ? new SinglePlayerTeam() : null;
+                                        ? new SinglePlayerTeam : null;
                                 },
                                 function (Forms\Get $get): PlayerNotInBothTeams {
                                     // Apply the PlayerNotInBothTeams rule to ensure no player is in both teams
@@ -112,6 +112,7 @@ class TennisMatchResource extends Resource
                                 if ($teamTwo) {
                                     $options[$teamTwo] = \App\Models\Team::find($teamTwo)->name;
                                 }
+
                                 return $options;
                             })
                             ->hiddenOn(['create'])

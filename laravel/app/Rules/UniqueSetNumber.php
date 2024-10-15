@@ -12,8 +12,6 @@ class UniqueSetNumber implements ValidationRule
 
     /**
      * Create a new rule instance.
-     *
-     * @param  int  $tennisMatchId
      */
     public function __construct(int $tennisMatchId)
     {
@@ -33,7 +31,7 @@ class UniqueSetNumber implements ValidationRule
             ->exists();
 
         if ($exists) {
-            $fail("This set number already exists for the match.");
+            $fail('This set number already exists for the match.');
         }
     }
 }

@@ -17,7 +17,7 @@ class SinglePlayerTeam implements ValidationRule
     {
         // Find the team and check if it has exactly one player
         $team = Team::find($value);
-        if (!$team || $team->users()->count() !== 1) {
+        if (! $team || $team->users()->count() !== 1) {
             $fail('This team must consist of a single player for a single match.');
         }
     }
