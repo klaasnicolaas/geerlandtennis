@@ -157,6 +157,7 @@ class TennisMatchResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -179,6 +180,7 @@ class TennisMatchResource extends Resource
             'index' => Pages\ListTennisMatches::route('/'),
             'create' => Pages\CreateTennisMatch::route('/create'),
             'edit' => Pages\EditTennisMatch::route('/{record}/edit'),
+            'view' => Pages\ViewTennisMatch::route('/{record}'),
         ];
     }
 }
