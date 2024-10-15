@@ -1,45 +1,24 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\TennisMatchResource\RelationManagers;
 
-use App\Filament\Resources\TennisSetResource\Pages;
-use App\Models\TennisSet;
 use App\Rules\UniqueSetNumber;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class TennisSetResource extends Resource
+class SetsRelationManager extends RelationManager
 {
-    protected static ?string $model = TennisSet::class;
+    protected static string $relationship = 'sets';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $recordTitleAttribute = 'set_number';
 
-    protected static ?string $navigationLabel = 'Sets';
-
-    protected static ?string $navigationGroup = 'Tennis';
-
-    protected static bool $shouldRegisterNavigation = true;
-
-    /**
-     * Display number of records in the navigation.
-     */
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tennis_match_id')
-                    ->relationship('tennisMatch', 'id')
-                    ->required()
-                    ->label('Match')
-                    ->helperText('Select the match to link this set to.'),
                 // Set Number Field
                 Forms\Components\TextInput::make('set_number')
                     ->required()
@@ -50,7 +29,7 @@ class TennisSetResource extends Resource
                         'required',
                         'integer',
                         'min:1',
-                        fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id')),
+                        fn ($livewire): UniqueSetNumber => new UniqueSetNumber($livewire->ownerRecord->id),
                     ]),
                 // Scores Section
                 Forms\Components\Fieldset::make('Scores')
@@ -77,9 +56,10 @@ class TennisSetResource extends Resource
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('id')
             ->columns([
                 Tables\Columns\TextColumn::make('set_number')
                     ->label('Set Number'),
@@ -90,41 +70,22 @@ class TennisSetResource extends Resource
                 Tables\Columns\IconColumn::make('has_tie_break')
                     ->label('Tie Break')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading(fn ($record): string => "Delete Set #{$record->set_number}"),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListTennisSets::route('/'),
-            'create' => Pages\CreateTennisSet::route('/create'),
-            'edit' => Pages\EditTennisSet::route('/{record}/edit'),
-        ];
     }
 }
