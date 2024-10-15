@@ -78,12 +78,14 @@ class TennisSetResource extends Resource
                                         if ($match->teamTwo) {
                                             $teams[$match->teamTwo->id] = $match->teamTwo->name;
                                         }
+
                                         return $teams;
                                     }
                                 }
+
                                 return [];
                             }),
-                ]),
+                    ]),
                 // Scores Section
                 Forms\Components\Section::make('Scores')
                     ->columns(2)

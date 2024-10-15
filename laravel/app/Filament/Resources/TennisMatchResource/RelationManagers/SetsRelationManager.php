@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\TennisMatchResource\RelationManagers;
 
-use App\Rules\UniqueSetNumber;
 use App\Models\Team;
+use App\Rules\UniqueSetNumber;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -81,7 +81,7 @@ class SetsRelationManager extends RelationManager
                         Forms\Components\Toggle::make('has_tie_break')
                             ->label('Tie Break')
                             ->default(false),
-                ]),
+                    ]),
             ]);
     }
 

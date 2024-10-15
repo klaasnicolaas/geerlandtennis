@@ -41,7 +41,7 @@ class UserTableSeeder extends Seeder
             // Set dynamic name and email
             $player->name = fake()->name;
             $player->email = fake()->unique()->safeEmail;
-            
+
             // Save the player with dynamic data
             $player->save();
 

@@ -98,7 +98,7 @@ class TennisMatchResource extends Resource
                             ->label('Tournament')
                             ->helperText('Required for non-practice matches.')
                             ->reactive()
-                            ->required(fn (Forms\Get $get): bool => !$get('is_practice')),
+                            ->required(fn (Forms\Get $get): bool => ! $get('is_practice')),
                         Forms\Components\Select::make('winner_team_id')
                             ->label('Winner Team')
                             ->nullable()
