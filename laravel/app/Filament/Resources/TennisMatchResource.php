@@ -52,9 +52,11 @@ class TennisMatchResource extends Resource
                             ->rules(['date', 'after_or_equal:today']),
                         Forms\Components\Toggle::make('is_practice')
                             ->label('Is Practice')
-                            ->default(false),
+                            ->default(false)
+                            ->reactive(),
                     ]),
                 Forms\Components\Section::make('Team and Tournament')
+                    ->description('Select the teams and tournament for this match.')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('team_one_id')
@@ -69,8 +71,7 @@ class TennisMatchResource extends Resource
                                     return $get('match_type') === MatchType::SINGLE->value
                                         ? new SinglePlayerTeam : null;
                                 },
-                            ])
-                            ->helperText('Select the first team.'),
+                            ]),
                         Forms\Components\Select::make('team_two_id')
                             ->relationship('teamTwo', 'name')
                             ->required()
@@ -88,13 +89,16 @@ class TennisMatchResource extends Resource
                                     // Apply the PlayerNotInBothTeams rule to ensure no player is in both teams
                                     return new PlayerNotInBothTeams($get('team_one_id'), $get('team_two_id'));
                                 },
-                            ])
-                            ->helperText('Select the second team.'),
+                            ]),
                         Forms\Components\Select::make('tournament_id')
                             ->relationship('tournament', 'name')
                             ->nullable()
+                            ->preload()
                             ->native(false)
-                            ->label('Tournament'),
+                            ->label('Tournament')
+                            ->helperText('Required for non-practice matches.')
+                            ->reactive()
+                            ->required(fn (Forms\Get $get): bool => !$get('is_practice')),
                         Forms\Components\Select::make('winner_team_id')
                             ->label('Winner Team')
                             ->nullable()
