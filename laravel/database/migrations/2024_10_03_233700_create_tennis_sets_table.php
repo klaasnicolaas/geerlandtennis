@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tennis_sets', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('tennis_match_id')->constrained('tennis_matches')->onDelete('cascade');
+            $table->foreignId('winner_team_id')->nullable()->constrained('teams')->onDelete('set null');
             $table->integer('set_number');
 
             // Scores for each team in this set
