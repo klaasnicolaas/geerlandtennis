@@ -46,13 +46,13 @@ class TennisSetResource extends Resource
                             ->label('Match')
                             ->native(false)
                             ->reactive()
-                            ->helperText('Select the match to link this set to'),
+                            ->helperText('Select the match to link this set to.'),
                         // Set Number Field
                         Forms\Components\TextInput::make('set_number')
                             ->required()
                             ->numeric()
                             ->label('Set Number')
-                            ->helperText('Enter the set number (e.g., 1, 2, 3)')
+                            ->helperText('Enter the set number (e.g., 1, 2, 3).')
                             ->rules([
                                 'required',
                                 'integer',
@@ -93,17 +93,17 @@ class TennisSetResource extends Resource
                             ->numeric()
                             ->label('Team One - Score')
                             ->rules(['required', 'integer', 'min:0'])
-                            ->helperText('Enter the score for Team 1 in this set'),
+                            ->helperText('Enter the score for Team 1 in this set.'),
                         Forms\Components\TextInput::make('team_two_score')
                             ->required()
                             ->numeric()
                             ->label('Team Two - Score')
                             ->rules(['required', 'integer', 'min:0'])
-                            ->helperText('Enter the score for Team 2 in this set'),
+                            ->helperText('Enter the score for Team 2 in this set.'),
                         // Tie Break Option
                         Forms\Components\Toggle::make('has_tie_break')
                             ->label('Tie Break')
-                            ->helperText('Enable if this set includes a tie break')
+                            ->helperText('Enable if this set includes a tie break.')
                             ->default(false),
                     ]),
             ]);

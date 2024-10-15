@@ -29,7 +29,7 @@ class SetsRelationManager extends RelationManager
                             ->required()
                             ->numeric()
                             ->label('Set Number')
-                            ->helperText('Enter the set number (e.g., 1, 2, 3)')
+                            ->helperText('Enter the set number (e.g., 1, 2, 3).')
                             ->rules([
                                 'required',
                                 'integer',
@@ -70,13 +70,13 @@ class SetsRelationManager extends RelationManager
                             ->numeric()
                             ->label('Team One - Score')
                             ->rules(['required', 'integer', 'min:0'])
-                            ->helperText('Enter the score for Team 1 in this set'),
+                            ->helperText('Enter the score for Team 1 in this set.'),
                         Forms\Components\TextInput::make('team_two_score')
                             ->required()
                             ->numeric()
                             ->label('Team Two - Score')
                             ->rules(['required', 'integer', 'min:0'])
-                            ->helperText('Enter the score for Team 2 in this set'),
+                            ->helperText('Enter the score for Team 2 in this set.'),
                         // Tie Break Option
                         Forms\Components\Toggle::make('has_tie_break')
                             ->label('Tie Break')
