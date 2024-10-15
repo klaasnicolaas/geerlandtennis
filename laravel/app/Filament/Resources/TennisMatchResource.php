@@ -137,7 +137,7 @@ class TennisMatchResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tournament.name'),
                 Tables\Columns\IconColumn::make('is_practice')
-                    ->label('Practice Match')
+                    ->label('Practice')
                     ->boolean()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
