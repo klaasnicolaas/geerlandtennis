@@ -15,7 +15,7 @@ class TournamentResource extends Resource
 {
     protected static ?string $model = Tournament::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-trophy';
 
     protected static ?string $navigationLabel = 'Tournaments';
 
@@ -33,30 +33,33 @@ class TournamentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Name of the tournament')
-                    ->required()
-                    ->unique(ignorable: fn ($record): mixed => $record),
+                Forms\Components\Section::make()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Tournament Name')
+                            ->required()
+                            ->unique(ignorable: fn ($record): mixed => $record)
+                            ->helperText('Enter the name of the tournament.'),
+                        Forms\Components\Select::make('tournament_type')
+                            ->options(MatchType::class)
+                            ->label('Tournament Type')
+                            ->native(false)
+                            ->required()
+                            ->helperText('Select whether this tournament is for singles or doubles.'),
+                        Forms\Components\DatePicker::make('start_date')
+                            ->label('Start date')
+                            ->required()
+                            ->helperText('Select the start date of the tournament.'),
+                        Forms\Components\DatePicker::make('end_date')
+                            ->label('End date')
+                            ->nullable()
+                            ->helperText('Select the end date of the tournament (if applicable).'),
+                    ]),
                 Forms\Components\Textarea::make('description')
                     ->label('Description')
                     ->rows(3)
                     ->nullable(),
-                Forms\Components\Select::make('tournament_type')
-                    ->label('Type')
-                    ->options(MatchType::class)
-                    ->native(false)
-                    ->required(),
-                Forms\Components\DatePicker::make('start_date')
-                    ->label('Start date')
-                    ->required(),
-                Forms\Components\DatePicker::make('end_date')
-                    ->label('End date'),
-                Forms\Components\Select::make('teams')
-                    ->label('Teams participating')
-                    ->native(false)
-                    ->multiple()
-                    ->relationship('teams', 'name')
-                    ->required(),
             ]);
     }
 
@@ -72,16 +75,14 @@ class TournamentResource extends Resource
                     ->label('Type')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
-                    ->label('Start date')
+                    ->label('Start Date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
-                    ->label('End date')
+                    ->label('End Date')
                     ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('teams_count')
-                    ->label('Number of teams')
-                    ->counts('teams'),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
