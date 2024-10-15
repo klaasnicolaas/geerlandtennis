@@ -4,7 +4,6 @@ namespace App\Filament\Resources\TennisMatchResource\Pages;
 
 use App\Filament\Resources\TennisMatchResource;
 use Filament\Actions;
-
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewTennisMatch extends ViewRecord
