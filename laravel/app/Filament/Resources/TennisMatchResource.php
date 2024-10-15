@@ -114,7 +114,7 @@ class TennisMatchResource extends Resource
                                 }
                                 return $options;
                             })
-                            ->visible(fn($livewire) => $livewire instanceof Pages\EditTennisMatch)
+                            ->hiddenOn(['create'])
                             ->rules(['nullable', 'exists:teams,id']),
                     ]),
             ]);
