@@ -25,4 +25,9 @@ class TennisSet extends Model
     {
         return $this->belongsTo(TennisMatch::class);
     }
+
+    public function winnerTeam(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'winner_team_id');
+    }
 }

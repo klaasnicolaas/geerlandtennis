@@ -35,25 +35,59 @@ class TennisSetResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('tennis_match_id')
-                    ->relationship('tennisMatch', 'id')
-                    ->required()
-                    ->label('Match')
-                    ->helperText('Select the match to link this set to.'),
-                // Set Number Field
-                Forms\Components\TextInput::make('set_number')
-                    ->required()
-                    ->numeric()
-                    ->label('Set Number')
-                    ->helperText('Enter the set number (e.g., 1, 2, 3).')
-                    ->rules([
-                        'required',
-                        'integer',
-                        'min:1',
-                        fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id')),
+                Forms\Components\Section::make('Set Details')
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        // Match Field
+                        Forms\Components\Select::make('tennis_match_id')
+                            ->relationship('tennisMatch', 'id')
+                            ->required()
+                            ->label('Match')
+                            ->native(false)
+                            ->reactive()
+                            ->helperText('Select the match to link this set to.'),
+                        // Set Number Field
+                        Forms\Components\TextInput::make('set_number')
+                            ->required()
+                            ->numeric()
+                            ->label('Set Number')
+                            ->helperText('Enter the set number (e.g., 1, 2, 3).')
+                            ->rules([
+                                'required',
+                                'integer',
+                                'min:1',
+                                fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id')),
+                            ]),
+                        // Winner Team Field
+                        Forms\Components\Select::make('winner_team_id')
+                            ->label('Winner Team')
+                            ->required()
+                            ->preload()
+                            ->native(false)
+                            ->placeholder('Select the winning team')
+                            ->options(function (callable $get): array {
+                                $matchId = $get('tennis_match_id');
+                                if ($matchId) {
+                                    $match = \App\Models\TennisMatch::find($matchId);
+                                    if ($match) {
+                                        $teams = [];
+                                        if ($match->teamOne) {
+                                            $teams[$match->teamOne->id] = $match->teamOne->name;
+                                        }
+                                        if ($match->teamTwo) {
+                                            $teams[$match->teamTwo->id] = $match->teamTwo->name;
+                                        }
+
+                                        return $teams;
+                                    }
+                                }
+
+                                return [];
+                            }),
                     ]),
                 // Scores Section
-                Forms\Components\Fieldset::make('Scores')
+                Forms\Components\Section::make('Scores')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('team_one_score')
@@ -68,12 +102,12 @@ class TennisSetResource extends Resource
                             ->label('Team Two - Score')
                             ->rules(['required', 'integer', 'min:0'])
                             ->helperText('Enter the score for Team 2 in this set.'),
+                        // Tie Break Option
+                        Forms\Components\Toggle::make('has_tie_break')
+                            ->label('Tie Break')
+                            ->helperText('Enable if this set includes a tie break.')
+                            ->default(false),
                     ]),
-                // Tie Break Option
-                Forms\Components\Toggle::make('has_tie_break')
-                    ->label('Tie Break')
-                    ->helperText('Enable if this set includes a tie break.')
-                    ->default(false),
             ]);
     }
 

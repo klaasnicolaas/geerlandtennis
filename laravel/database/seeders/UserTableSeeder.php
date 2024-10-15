@@ -35,5 +35,18 @@ class UserTableSeeder extends Seeder
             'email' => 'user@example.com',
         ]);
         $user->assignRole(UserRole::USER->value);
+
+        // Tennis Players
+        User::factory(6)->create()->each(function ($player): void {
+            // Set dynamic name and email
+            $player->name = fake()->name;
+            $player->email = fake()->unique()->safeEmail;
+
+            // Save the player with dynamic data
+            $player->save();
+
+            // Assign role to each player
+            $player->assignRole(UserRole::USER->value);
+        });
     }
 }

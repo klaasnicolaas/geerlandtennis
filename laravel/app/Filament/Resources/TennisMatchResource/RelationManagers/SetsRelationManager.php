@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TennisMatchResource\RelationManagers;
 
+use App\Models\Team;
 use App\Rules\UniqueSetNumber;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,20 +20,49 @@ class SetsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                // Set Number Field
-                Forms\Components\TextInput::make('set_number')
-                    ->required()
-                    ->numeric()
-                    ->label('Set Number')
-                    ->helperText('Enter the set number (e.g., 1, 2, 3).')
-                    ->rules([
-                        'required',
-                        'integer',
-                        'min:1',
-                        fn ($livewire): UniqueSetNumber => new UniqueSetNumber($livewire->ownerRecord->id),
+                Forms\Components\Section::make('Set Details')
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        // Set Number Field
+                        Forms\Components\TextInput::make('set_number')
+                            ->required()
+                            ->numeric()
+                            ->label('Set Number')
+                            ->helperText('Enter the set number (e.g., 1, 2, 3).')
+                            ->rules([
+                                'required',
+                                'integer',
+                                'min:1',
+                                fn ($livewire): UniqueSetNumber => new UniqueSetNumber($livewire->ownerRecord->id),
+                            ]),
+                        // Winner Team Field
+                        Forms\Components\Select::make('winner_team_id')
+                            ->label('Winner Team')
+                            ->required()
+                            ->preload()
+                            ->native(false)
+                            ->options(function ($livewire): array {
+                                $match = $livewire->ownerRecord;
+
+                                // Get team one and team two IDs
+                                $teamOne = Team::find($match->team_one_id);
+                                $teamTwo = Team::find($match->team_two_id);
+
+                                $options = [];
+                                if ($teamOne) {
+                                    $options[$teamOne->id] = $teamOne->name;
+                                }
+                                if ($teamTwo) {
+                                    $options[$teamTwo->id] = $teamTwo->name;
+                                }
+
+                                return $options;
+                            })
+                            ->placeholder('Select the winning team'),
                     ]),
                 // Scores Section
-                Forms\Components\Fieldset::make('Scores')
+                Forms\Components\Section::make('Scores')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('team_one_score')
@@ -47,12 +77,11 @@ class SetsRelationManager extends RelationManager
                             ->label('Team Two - Score')
                             ->rules(['required', 'integer', 'min:0'])
                             ->helperText('Enter the score for Team 2 in this set.'),
+                        // Tie Break Option
+                        Forms\Components\Toggle::make('has_tie_break')
+                            ->label('Tie Break')
+                            ->default(false),
                     ]),
-                // Tie Break Option
-                Forms\Components\Toggle::make('has_tie_break')
-                    ->label('Tie Break')
-                    ->helperText('Enable if this set includes a tie break.')
-                    ->default(false),
             ]);
     }
 

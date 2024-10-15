@@ -42,6 +42,7 @@ class TeamResource extends Resource
                     ->multiple()
                     ->label('Tennis Players')
                     ->required()
+                    ->preload()
                     ->minItems(1)
                     ->maxItems(2)
                     ->helperText('A team can have a minimum of 1 and a maximum of 2 players.'),
@@ -58,7 +59,7 @@ class TeamResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('users.name')
                     ->label('Tennis players')
-                    ->formatStateUsing(fn ($record): string => $record->users->pluck('name')->join(', ')),
+                    ->formatStateUsing(fn ($record): string => $record->users->pluck('name')->join(' & ')),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
