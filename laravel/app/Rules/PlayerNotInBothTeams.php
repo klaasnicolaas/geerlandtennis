@@ -53,7 +53,7 @@ class PlayerNotInBothTeams implements ValidationRule
 
                 // Create a string of the common player names to include in the error message
                 $playerNamesString = implode(separator: ', ', array: $commonPlayerNames);
-                $fail("De volgende speler(s) zitten in beide teams: $playerNamesString.");
+                $fail("The following player(s) are on both teams: $playerNamesString.");
             }
         }
     }
