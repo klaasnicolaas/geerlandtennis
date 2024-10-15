@@ -8,14 +8,14 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class UniqueSetNumber implements ValidationRule
 {
-    protected $tennisMatchId;
+    protected int $tennisMatchId;
 
     /**
      * Create a new rule instance.
      *
      * @param  int  $tennisMatchId
      */
-    public function __construct($tennisMatchId)
+    public function __construct(int $tennisMatchId)
     {
         $this->tennisMatchId = $tennisMatchId;
     }

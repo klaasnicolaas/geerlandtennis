@@ -22,7 +22,7 @@ class TennisSetResource extends Resource
 
     protected static ?string $navigationGroup = 'Tennis';
 
-    protected static bool $shouldRegisterNavigation = false;
+    protected static bool $shouldRegisterNavigation = true;
 
     /**
      * Display number of records in the navigation.
@@ -32,16 +32,15 @@ class TennisSetResource extends Resource
         return static::getModel()::count();
     }
 
-    public static function form(Form $form, ?int $tennisMatchId = null): Form
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Forms\Components\Select::make('tennis_match_id')
-                //     ->relationship('tennisMatch', 'id')
-                //     ->required()
-                //     ->label('Match')
-                //     ->helperText('Select the match to link this set to.')
-                //     ->hiddenOn(SetsRelationManager::class),
+                Forms\Components\Select::make('tennis_match_id')
+                    ->relationship('tennisMatch', 'id')
+                    ->required()
+                    ->label('Match')
+                    ->helperText('Select the match to link this set to.'),
                 // Set Number Field
                 Forms\Components\TextInput::make('set_number')
                     ->required()
@@ -52,7 +51,7 @@ class TennisSetResource extends Resource
                         'required',
                         'integer',
                         'min:1',
-                        new UniqueSetNumber($tennisMatchId),
+                        fn ($get): UniqueSetNumber => new UniqueSetNumber($get('tennis_match_id'))
                     ]),
                 // Scores Section
                 Forms\Components\Fieldset::make('Scores')
