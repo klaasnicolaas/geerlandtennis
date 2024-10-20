@@ -51,17 +51,17 @@ class ShieldSeeder extends Seeder
     {
         foreach ($resources as $resource => $actions) {
             $resourceName = str_replace('-', '::', Str::kebab($resource));
-    
+
             foreach ($actions as $action) {
                 $permissionName = "{$action}_{$resourceName}";
-    
+
                 // Create or find the permission
                 $permissionModel = Utils::getPermissionModel();
                 $permission = $permissionModel::firstOrCreate([
                     'name' => $permissionName,
                     'guard_name' => $guardName,
                 ]);
-    
+
                 // Assign permission to role
                 $role->givePermissionTo($permission);
             }
