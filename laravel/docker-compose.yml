@@ -1,6 +1,7 @@
 ---
 name: 'geerland-tennis'
 services:
+    # Laravel application
     laravel.test:
         build:
             context: ./vendor/laravel/sail/runtimes/8.3
@@ -25,6 +26,8 @@ services:
             - sail
         depends_on:
             - mysql
+            - redis
+    # MySQL database
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -49,9 +52,67 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    # Redis cache
+    redis:
+        image: 'redis:alpine'
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - 'sail-redis:/data'
+        entrypoint: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - -a
+                - ${REDIS_PASSWORD}
+                - ping
+            retries: 3
+            timeout: 5s
+    # Redis Insight
+    redisinsight:
+        image: 'redislabs/redisinsight:latest'
+        restart: unless-stopped
+        ports:
+            - '${FORWARD_INSIGHT_PORT:-5540}:5540'
+        depends_on:
+            - redis
+        volumes:
+            - sail-redisinsight:/data
+        networks:
+            - sail
+    # Queue Worker
+    # worker:
+    #     build:
+    #         context: ./vendor/laravel/sail/runtimes/8.3
+    #         dockerfile: Dockerfile
+    #         args:
+    #             WWWGROUP: '${WWWGROUP}'
+    #     image: sail-8.3/app
+    #     restart: unless-stopped
+    #     environment:
+    #         WWWUSER: '${WWWUSER}'
+    #         LARAVEL_SAIL: 1
+    #     volumes:
+    #         - '.:/var/www/html'
+    #     networks:
+    #         - sail
+    #     depends_on:
+    #         - mysql
+    #         - redis
+    #     command: php artisan queue:work --delay=3 --tries=3 --queue=high,default
+
 networks:
     sail:
         driver: bridge
+
 volumes:
     sail-mysql:
+        driver: local
+    sail-redis:
+        driver: local
+    sail-redisinsight:
         driver: local
