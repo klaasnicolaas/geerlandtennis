@@ -2,13 +2,10 @@
 
 namespace App\Providers\Filament;
 
-use App\Enums\UserRole;
-use App\Filament\Pages\Backups;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -21,37 +18,32 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 
-class AdminPanelProvider extends PanelProvider
+class AppPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
+            ->id('app')
+            ->path('app')
             ->login()
+            ->registration()
             ->passwordReset()
-            ->emailVerification()
             // Theme
             ->favicon(asset('images/favicon.ico'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Lime,
             ])
             ->databaseNotifications()
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
+            ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
             // Plugins
-            ->plugin(FilamentSpatieLaravelBackupPlugin::make()
-                ->usingPage(Backups::class)
-                ->usingPolingInterval('10s'))
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
-                \Jeffgreco13\FilamentBreezy\BreezyCore::make()
+                BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
                         hasAvatars: true,
@@ -59,31 +51,15 @@ class AdminPanelProvider extends PanelProvider
                     )
                     ->enableTwoFactorAuthentication(),
             ])
-            // Widgets
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             // Navigation
-            ->sidebarCollapsibleOnDesktop()
+            ->topNavigation()
             ->userMenuItems([
                 'logout' => MenuItem::make()->label('Log Out'),
             ])
-            ->navigationItems([
-                NavigationItem::make('Github')
-                    ->url('https://github.com/klaasnicolaas/laravel-template', shouldOpenInNewTab: true)
-                    ->icon('heroicon-o-link')
-                    ->group('Information')
-                    ->sort(2),
-                NavigationItem::make('Log Viewer')
-                    ->url(fn (): string => route('log-viewer.index'), shouldOpenInNewTab: true)
-                    ->visible(fn (): bool => auth()->user()?->hasRole(UserRole::ADMIN))
-                    ->icon('heroicon-o-document-text')
-                    ->group('Settings')
-                    ->sort(4),
-            ])
-            // Middleware
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
