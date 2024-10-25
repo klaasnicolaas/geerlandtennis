@@ -33,7 +33,11 @@ return [
         ],
         'user' => [
             'guard_name' => 'web',
-            'permissions' => [],
+            'permissions' => [
+                'resource' => [
+                    'tournament' => ['view_any'],
+                ],
+            ],
         ],
     ],
     'direct_permissions' => [

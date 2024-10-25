@@ -9,6 +9,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -98,5 +99,21 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class);
+    }
+
+    // Helper method to get available teammates for doubles tournaments
+    public function getAvailableTeammates(): Collection
+    {
+        return User::where('id', '!=', $this->id)->get();
+    }
+
+    // Check if a user is already registered in a team for a specific tournament
+    public function isRegisteredForTournament(Tournament $tournament): bool
+    {
+        return $this->teams()
+            ->whereHas('tournaments', function ($query) use ($tournament): void {
+                $query->where('tournament_id', $tournament->id);
+            })
+            ->exists();
     }
 }
