@@ -111,9 +111,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function isRegisteredForTournament(Tournament $tournament): bool
     {
         return $this->teams()
-                    ->whereHas('tournaments', function ($query) use ($tournament): void {
-                        $query->where('tournament_id', $tournament->id);
-                    })
-                    ->exists();
+            ->whereHas('tournaments', function ($query) use ($tournament): void {
+                $query->where('tournament_id', $tournament->id);
+            })
+            ->exists();
     }
 }

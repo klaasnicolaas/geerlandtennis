@@ -36,7 +36,7 @@ return [
             'permissions' => [
                 'resource' => [
                     'tournament' => ['view_any'],
-                ]
+                ],
             ],
         ],
     ],

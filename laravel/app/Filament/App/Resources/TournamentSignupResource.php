@@ -47,13 +47,6 @@ class TournamentSignupResource extends Resource
                     ->label('End Date'),
                 Tables\Columns\TextColumn::make('tournament_type')
                     ->label('Tournament Type'),
-                // Tables\Columns\BadgeColumn::make('team_tournament_status')
-                //     ->label('Registration Status')
-                //     ->getStateUsing(fn(Tournament $record): ?string => $record->getUserRegistrationStatus())
-                //     ->colors([
-                //         'success' => 'registered',
-                //         'warning' => 'pending',
-                //     ]),
             ])
             ->filters([
                 //

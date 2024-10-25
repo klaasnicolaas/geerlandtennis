@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Auth;
 use App\Enums\MatchType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,18 +39,5 @@ class Tournament extends Model
     public function tennisMatches(): HasMany
     {
         return $this->hasMany(TennisMatch::class);
-    }
-    
-    /**
-     * Get the registration status of the current user for this tournament.
-     */
-    public function getUserRegistrationStatus(): ?string
-    {
-        // Get the user's team and access the pivot status
-        $team = Auth::user()->teams()
-            ->whereHas('tournaments', fn($q): mixed => $q->where('tournament_id', $this->id))
-            ->first();
-
-        return $team ? $team->tournaments->firstWhere('id', $this->id)->pivot->status : null;
     }
 }
