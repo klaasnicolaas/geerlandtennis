@@ -2,13 +2,13 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Forms\Form;
-use Filament\Forms\Components\Wizard;
-use Filament\Pages\Auth\Register;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Form;
+use Filament\Pages\Auth\Register;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 
 class Registration extends Register
 {
@@ -34,7 +34,7 @@ class Registration extends Register
                             $this->getPasswordFormComponent(),
                             $this->getPasswordConfirmationFormComponent(),
                         ]),
-                ])->submitAction(new HtmlString(Blade::render(<<<BLADE
+                ])->submitAction(new HtmlString(Blade::render(<<<'BLADE'
                     <x-filament::button
                         type="submit"
                         size="sm"
