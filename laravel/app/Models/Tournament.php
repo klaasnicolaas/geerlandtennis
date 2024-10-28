@@ -40,4 +40,29 @@ class Tournament extends Model
     {
         return $this->hasMany(TennisMatch::class);
     }
+
+    /**
+     * Helper methods.
+     */
+    // Create a team with a single user.
+    public function createSingleTeam($user): Team
+    {
+        $team = Team::create([
+            'name' => "{$user->name} (Singles)",
+        ]);
+        $team->users()->attach($user->id);
+
+        return $team;
+    }
+
+    // Create a team with two users.
+    public function createDoubleTeam($user, $teammate): Team
+    {
+        $team = Team::create([
+            'name' => "{$user->name} & {$teammate->name}",
+        ]);
+        $team->users()->attach([$user->id, $teammate->id]);
+
+        return $team;
+    }
 }

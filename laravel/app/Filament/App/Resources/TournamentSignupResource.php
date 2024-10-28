@@ -4,7 +4,6 @@ namespace App\Filament\App\Resources;
 
 use App\Enums\MatchType;
 use App\Filament\App\Resources\TournamentSignupResource\Pages;
-use App\Models\Team;
 use App\Models\Tournament;
 use Auth;
 use Filament\Forms;
@@ -74,11 +73,25 @@ class TournamentSignupResource extends Resource
                         return [];
                     })
                     ->action(function (Tournament $record, array $data): void {
+                        $user = Auth::user();
+
                         if ($record->tournament_type === MatchType::SINGLE) {
-                            static::signUpForSingles(tournament: $record);
+                            $team = $record->createSingleTeam($user);
                         } elseif ($record->tournament_type === MatchType::DOUBLE) {
-                            static::signUpForDoubles(tournament: $record, teammateId: $data['teammate']);
+                            $teammate = $user->getAvailableTeammates()->find($data['teammate']);
+                            $team = $record->createDoubleTeam($user, $teammate);
                         }
+
+                        $record->teams()->attach($team->id, [
+                            'registration_date' => now(),
+                            'status' => 'registered',
+                        ]);
+
+                        Notification::make()
+                            ->title('Tournament Sign Up')
+                            ->success()
+                            ->body('You have successfully signed up for the tournament!')
+                            ->send();
                     })
                     ->hidden(function ($record): bool {
                         // Hide the button if the user is already registered for the tournament
@@ -107,58 +120,5 @@ class TournamentSignupResource extends Resource
             // 'create' => Pages\CreateTournamentSignup::route('/create'),
             // 'edit' => Pages\EditTournamentSignup::route('/{record}/edit'),
         ];
-    }
-
-    /**
-     * Method to sign up for a singles tournament.
-     */
-    public static function signUpForSingles(Tournament $tournament): void
-    {
-        $user = Auth::user();
-
-        // Create a single-player team
-        $team = Team::create([
-            'name' => $user->getAttribute('name').' (Singles)',
-        ]);
-        $team->users()->attach($user->getAuthIdentifier());
-
-        // Register the team for the tournament
-        $tournament->teams()->attach($team->id, [
-            'registration_date' => now(),
-            'status' => 'registered', // TODO: Use an enum for this
-        ]);
-
-        Notification::make()
-            ->title('Tournament Sign Up')
-            ->success()
-            ->body('You have successfully signed up for the tournament!')
-            ->send();
-    }
-
-    /**
-     * Method to sign up for a doubles tournament.
-     */
-    public static function signUpForDoubles(Tournament $tournament, int $teammateId): void
-    {
-        $user = Auth::user();
-        $teammate = $user->getAvailableTeammates()->find($teammateId);
-
-        // Automatically generate a team name based on the user and their teammate
-        $team = Team::create([
-            'name' => $user->getAttribute('name').' & '.$teammate->getAttribute('name'),
-        ]);
-        $team->users()->attach([$user->getAuthIdentifier(), $teammate->getAttribute('id')]);
-
-        // Register the team for the tournament
-        $tournament->teams()->attach($team->id, [
-            'registration_date' => now(),
-            'status' => 'registered',
-        ]);
-
-        Notification::make()
-            ->title('Tournament Sign Up')
-            ->success()
-            ->body('You have successfully signed up for the tournament!')
-            ->send();
     }
 }
