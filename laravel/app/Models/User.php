@@ -101,10 +101,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->belongsToMany(Team::class);
     }
 
-    // Helper method to get available teammates for doubles tournaments
-    public function getAvailableTeammates(): Collection
+    // Get available teammates for a specific tournament
+    public function getAvailableTeammates(int $tournamentId): array|Collection
     {
-        return User::where('id', '!=', $this->id)->get();
+        return User::whereDoesntHave('teams', function ($query) use ($tournamentId): void {
+            $query->whereHas('tournaments', function ($tournamentQuery) use ($tournamentId): void {
+                $tournamentQuery->where('tournament_id', $tournamentId);
+            });
+        })->where('id', '<>', $this->id)->get();
     }
 
     // Check if a user is already registered in a team for a specific tournament

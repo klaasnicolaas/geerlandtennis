@@ -6,6 +6,7 @@ use App\Enums\MatchType;
 use App\Filament\App\Resources\TournamentSignupResource\Pages;
 use App\Models\Tournament;
 use Auth;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -59,33 +60,24 @@ class TournamentSignupResource extends Resource
                     ->modalHeading('Sign Up for Tournament')
                     ->modalDescription('Complete the process by selecting your teammate for this doubles tournament.')
                     ->form(function (Tournament $record): array {
-                        if ($record->tournament_type === MatchType::DOUBLE) {
-                            return [
-                                Forms\Components\Select::make('teammate')
-                                    ->label('Select Your Teammate')
-                                    ->options(Auth::user()->getAvailableTeammates()->pluck('name', 'id'))
-                                    ->native(false)
-                                    ->searchable()
-                                    ->required(),
-                            ];
-                        }
-
-                        return [];
+                        return $record->tournament_type === MatchType::DOUBLE ? [
+                            Forms\Components\Select::make('teammate')
+                                ->label('Select Your Teammate')
+                                ->options(Auth::user()->getAvailableTeammates($record->id)->pluck('name', 'id'))
+                                ->native(false)
+                                ->searchable()
+                                ->required(),
+                        ] : [];
                     })
                     ->action(function (Tournament $record, array $data): void {
                         $user = Auth::user();
 
-                        if ($record->tournament_type === MatchType::SINGLE) {
-                            $team = $record->createSingleTeam($user);
-                        } elseif ($record->tournament_type === MatchType::DOUBLE) {
-                            $teammate = $user->getAvailableTeammates()->find($data['teammate']);
-                            $team = $record->createDoubleTeam($user, $teammate);
+                        if (!$user instanceof User) {
+                            throw new \Exception('You must be logged in to register for a tournament.');
                         }
 
-                        $record->teams()->attach($team->id, [
-                            'registration_date' => now(),
-                            'status' => 'registered',
-                        ]);
+                        $teammateId = $data['teammate'] ?? null;
+                        $record->registerTeamTournament($user, $teammateId);
 
                         Notification::make()
                             ->title('Tournament Sign Up')
@@ -93,10 +85,7 @@ class TournamentSignupResource extends Resource
                             ->body('You have successfully signed up for the tournament!')
                             ->send();
                     })
-                    ->hidden(function ($record): bool {
-                        // Hide the button if the user is already registered for the tournament
-                        return Auth::user()->isRegisteredForTournament($record);
-                    })
+                    ->hidden(fn($record): bool => Auth::user()->isRegisteredForTournament($record))
                     ->modalWidth(MaxWidth::Large),
             ]);
         // ->bulkActions([

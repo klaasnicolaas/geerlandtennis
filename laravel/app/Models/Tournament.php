@@ -44,6 +44,23 @@ class Tournament extends Model
     /**
      * Helper methods.
      */
+    // Register a user for the tournament with an optional teammate.
+    public function registerTeamTournament(User $user, ?int $teammateId = null): void
+    {
+        if ($this->tournament_type === MatchType::SINGLE) {
+            $team = $this->createSingleTeam($user);
+        } else {
+            $teammate = User::findOrFail($teammateId);
+            $team = $this->createDoubleTeam($user, $teammate);
+        }
+
+        // Register the team for the tournament.
+        $this->teams()->attach($team->id, [
+            'registration_date' => now(),
+            'status' => 'registered',
+        ]);
+    }
+
     // Create a team with a single user.
     public function createSingleTeam($user): Team
     {
