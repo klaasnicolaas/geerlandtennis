@@ -45,6 +45,7 @@ class Team extends Model
     public static function generateTeamHash(array $userIds): string
     {
         sort($userIds);
+
         return md5(implode('-', $userIds));
     }
 }

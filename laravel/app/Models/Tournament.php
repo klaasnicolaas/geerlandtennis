@@ -47,11 +47,18 @@ class Tournament extends Model
     // Register a user for the tournament with an optional teammate.
     public function registerTeamTournament(User $user, ?int $teammateId = null): void
     {
+        // Find or create the team for the user(s).
         if ($this->tournament_type === MatchType::SINGLE) {
-            $team = $this->createSingleTeam($user);
+            $team = $this->findOrCreateTeam(
+                [$user],
+                "{$user->name} (Singles)"
+            );
         } else {
             $teammate = User::findOrFail($teammateId);
-            $team = $this->createDoubleTeam($user, $teammate);
+            $team = $this->findOrCreateTeam(
+                [$user, $teammate],
+                "{$user->name} & {$teammate->name}"
+            );
         }
 
         // Register the team for the tournament.
@@ -61,42 +68,25 @@ class Tournament extends Model
         ]);
     }
 
-    // Create a team with a single user.
-    public function createSingleTeam($user): Team
+    // Find or create a team with the given users.
+    public function findOrCreateTeam(array $users, string $teamName): Team
     {
-        // Check if a team with the user already exists.
-        $teamHash = Team::generateTeamHash([$user->id]);
+        // Generate a team hash from the user IDs.
+        $userIds = array_map(fn ($user) => $user instanceof User ? $user->id : $user, $users);
+        $teamHash = Team::generateTeamHash($userIds);
+
+        // Check if a team with the same hash already exists.
         $existingTeam = Team::where('team_hash', $teamHash)->first();
         if ($existingTeam) {
             return $existingTeam;
         }
 
-        // Create a new team with the user.
+        // Create a new team
         $team = Team::create([
-            'name' => "{$user->name} (Singles)",
+            'name' => $teamName,
             'team_hash' => $teamHash,
         ]);
-        $team->users()->attach($user->id);
-
-        return $team;
-    }
-
-    // Create a team with two users.
-    public function createDoubleTeam($user, $teammate): Team
-    {
-        // Check if a team with the user already exists.
-        $teamHash = Team::generateTeamHash([$user->id, $teammate->id]);
-        $existingTeam = Team::where('team_hash', $teamHash)->first();
-        if ($existingTeam) {
-            return $existingTeam;
-        }
-
-        // Create a new team with the users.
-        $team = Team::create([
-            'name' => "{$user->name} & {$teammate->name}",
-            'team_hash' => $teamHash,
-        ]);
-        $team->users()->attach([$user->id, $teammate->id]);
+        $team->users()->attach($userIds);
 
         return $team;
     }
