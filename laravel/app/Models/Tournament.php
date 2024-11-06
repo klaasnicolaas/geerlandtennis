@@ -64,8 +64,17 @@ class Tournament extends Model
     // Create a team with a single user.
     public function createSingleTeam($user): Team
     {
+        // Check if a team with the user already exists.
+        $teamHash = Team::generateTeamHash([$user->id]);
+        $existingTeam = Team::where('team_hash', $teamHash)->first();
+        if ($existingTeam) {
+            return $existingTeam;
+        }
+
+        // Create a new team with the user.
         $team = Team::create([
             'name' => "{$user->name} (Singles)",
+            'team_hash' => $teamHash,
         ]);
         $team->users()->attach($user->id);
 
@@ -75,8 +84,17 @@ class Tournament extends Model
     // Create a team with two users.
     public function createDoubleTeam($user, $teammate): Team
     {
+        // Check if a team with the user already exists.
+        $teamHash = Team::generateTeamHash([$user->id, $teammate->id]);
+        $existingTeam = Team::where('team_hash', $teamHash)->first();
+        if ($existingTeam) {
+            return $existingTeam;
+        }
+
+        // Create a new team with the users.
         $team = Team::create([
             'name' => "{$user->name} & {$teammate->name}",
+            'team_hash' => $teamHash,
         ]);
         $team->users()->attach([$user->id, $teammate->id]);
 
