@@ -5,8 +5,8 @@ namespace App\Filament\App\Resources;
 use App\Enums\MatchType;
 use App\Filament\App\Resources\TournamentSignupResource\Pages;
 use App\Models\Tournament;
-use Auth;
 use App\Models\User;
+use Auth;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -72,7 +72,7 @@ class TournamentSignupResource extends Resource
                     ->action(function (Tournament $record, array $data): void {
                         $user = Auth::user();
 
-                        if (!$user instanceof User) {
+                        if (! $user instanceof User) {
                             throw new \Exception('You must be logged in to register for a tournament.');
                         }
 
@@ -85,7 +85,7 @@ class TournamentSignupResource extends Resource
                             ->body('You have successfully signed up for the tournament!')
                             ->send();
                     })
-                    ->hidden(fn($record): bool => Auth::user()->isRegisteredForTournament($record))
+                    ->hidden(fn ($record): bool => Auth::user()->isRegisteredForTournament($record))
                     ->modalWidth(MaxWidth::Large),
             ]);
         // ->bulkActions([
