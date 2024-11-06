@@ -13,6 +13,7 @@ class Team extends Model
 
     protected $fillable = [
         'name',
+        'team_hash',
     ];
 
     /**
@@ -36,5 +37,15 @@ class Team extends Model
     public function matches(): HasMany
     {
         return $this->hasMany(TennisMatch::class);
+    }
+
+    /**
+     * Helper methods.
+     */
+    public static function generateTeamHash(array $userIds): string
+    {
+        sort($userIds);
+
+        return md5(implode('-', $userIds));
     }
 }
