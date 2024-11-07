@@ -25,9 +25,8 @@ class Tournament extends Model
     ];
 
     /**
-     * Relationships to other models.
+     * All teams that are part of the tournament.
      */
-    // Teams that participate in the tournament.
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'team_tournament')
@@ -35,16 +34,17 @@ class Tournament extends Model
             ->withTimestamps();
     }
 
-    // Matches that are part of the tournament.
+    /**
+     * Matches that are part of the tournament.
+     */
     public function tennisMatches(): HasMany
     {
         return $this->hasMany(TennisMatch::class);
     }
 
     /**
-     * Helper methods.
+     * Register a user for the tournament with an optional teammate.
      */
-    // Register a user for the tournament with an optional teammate.
     public function registerTeamTournament(User $user, ?int $teammateId = null): void
     {
         // Find or create the team for the user(s).
@@ -68,7 +68,9 @@ class Tournament extends Model
         ]);
     }
 
-    // Find or create a team with the given users.
+    /**
+     * Find or create a team with the given users.
+     */
     public function findOrCreateTeam(array $users, string $teamName): Team
     {
         // Generate a team hash from the user IDs.
