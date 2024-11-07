@@ -71,11 +71,10 @@ class TeamsRelationManager extends RelationManager
                             ->native(false),
                     ])
                     ->action(function (Team $record, array $data): void {
-                        $record->pivot->update([
-                            'status' => $data['status'],
-                        ]);
+                        $record->getRelationValue('pivot')->update($data);
                     }),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->modalHeading(fn ($record): string => "Delete Team {$record->name}"),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
