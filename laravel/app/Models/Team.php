@@ -17,15 +17,16 @@ class Team extends Model
     ];
 
     /**
-     * Relationships to other models.
+     * Users that are part of the team.
      */
-    // Users that are part of the team.
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'team_user');
     }
 
-    // Tournaments that the team participates in.
+    /**
+     * Tournaments that the team participates in.
+     */
     public function tournaments(): BelongsToMany
     {
         return $this->belongsToMany(Tournament::class, 'team_tournament')
@@ -33,14 +34,16 @@ class Team extends Model
             ->withTimestamps();
     }
 
-    // Matches that the team participates in.
+    /**
+     * Matches that the team participates in.
+     */
     public function matches(): HasMany
     {
         return $this->hasMany(TennisMatch::class);
     }
 
     /**
-     * Helper methods.
+     * Generate a hash for a team based on the user IDs.
      */
     public static function generateTeamHash(array $userIds): string
     {
