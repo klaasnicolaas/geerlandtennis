@@ -97,6 +97,7 @@ class TournamentResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -119,6 +120,7 @@ class TournamentResource extends Resource
         return [
             'index' => Pages\ListTournaments::route('/'),
             'create' => Pages\CreateTournament::route('/create'),
+            'view' => Pages\ViewTournament::route('/{record}'),
             'edit' => Pages\EditTournament::route('/{record}/edit'),
         ];
     }
