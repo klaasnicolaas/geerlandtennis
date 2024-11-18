@@ -28,6 +28,7 @@ return [
                 'resource' => [
                     'role' => ['view', 'view_any'],
                     'user' => ['view', 'view_any'],
+                    'tournament' => ['view_any'],
                 ],
             ],
         ],
