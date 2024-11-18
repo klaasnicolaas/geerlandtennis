@@ -4,8 +4,8 @@ namespace App\Filament\Resources\TournamentResource\Pages;
 
 use App\Filament\Resources\TournamentResource;
 use App\Filament\Resources\TournamentResource\RelationManagers;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewTournament extends ViewRecord
 {
